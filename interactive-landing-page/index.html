@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAPE TOWN FOOD FEST</title>
+    <!--
+  Vue 3 Single-File Component Structure simulated in one HTML file
+  This file demonstrates App.vue + TicketCard.vue patterns using CDN
+  No build step required - runs directly in browser
+-->
+    <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 
+   * App.vue <style> section
+   * Global styles + CSS variables for theme
+   */
+      :root {
+        --neon-pink: #ff006e;
+        --neon-purple: #8338ec;
+        --neon-blue: #3a86ff;
+        --dark-bg: #0a0a0f;
+        --dark-card: #12121a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--dark-bg);
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      .font-bebas {
+        font-family: "Bebas Neue", cursive;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-bg {
+        background-image: url("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+
+      .gradient-text {
+        background: linear-gradient(
+          135deg,
+          var(--neon-pink),
+          var(--neon-purple),
+          var(--neon-blue)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .neon-glow {
+        box-shadow:
+          0 0 20px rgba(255, 0, 110, 0.5),
+          0 0 40px rgba(131, 56, 236, 0.3),
+          0 0 60px rgba(58, 134, 255, 0.2);
+        border: 2px solid transparent;
+        background:
+          linear-gradient(var(--dark-card), var(--dark-card)) padding-box,
+          linear-gradient(
+              135deg,
+              var(--neon-pink),
+              var(--neon-purple),
+              var(--neon-blue)
+            )
+            border-box;
+      }
+
+      .neon-glow-hover:hover {
+        transform: translateY(-8px);
+        box-shadow:
+          0 0 30px rgba(255, 0, 110, 0.7),
+          0 0 50px rgba(131, 56, 236, 0.5),
+          0 0 70px rgba(58, 134, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .vip-badge {
+        background: linear-gradient(
+          135deg,
+          var(--neon-pink),
+          var(--neon-purple)
+        );
+        animation: pulse-glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes pulse-glow {
+        from {
+          box-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
+        }
+        to {
+          box-shadow:
+            0 0 20px rgba(255, 0, 110, 0.8),
+            0 0 30px rgba(131, 56, 236, 0.6);
+        }
+      }
+
+      .heart-animate {
+        animation: heart-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes heart-pop {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .glass-effect {
+        background: rgba(18, 18, 26, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* TicketCard.vue <style> scoped - card specific animations */
+      .ticket-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      const { createApp, ref, computed } = Vue;
+
+      /*
+       * ============================================
+       * TicketCard.vue - Reusable Component Logic
+       * ============================================
+       * <template> section would be in TicketCard.vue
+       * <script setup> section below
+       * <style scoped> section is in main <style> tag above
+       */
+      const TicketCard = {
+        name: "TicketCard",
+        props: {
+          ticket: {
+            type: Object,
+            required: true,
+          },
+        },
+        emits: ["toggle-favourite", "select-ticket"],
+        setup(props, { emit }) {
+          // TicketCard.vue <script setup>
+          const isAnimating = ref(false);
+
+          const toggleFavourite = () => {
+            isAnimating.value = true;
+            emit("toggle-favourite", props.ticket.id);
+            setTimeout(() => {
+              isAnimating.value = false;
+            }, 300);
+          };
+
+          const selectTicket = () => {
+            emit("select-ticket", props.ticket);
+          };
+
+          const cardClasses = computed(() => {
+            return props.ticket.featured
+              ? "neon-glow neon-glow-hover"
+              : "border border-gray-800 hover:border-gray-700 hover:shadow-2xl hover:shadow-purple-500/10";
+          });
+
+          // TicketCard.vue <template> equivalent
+          return {
+            isAnimating,
+            toggleFavourite,
+            selectTicket,
+            cardClasses,
+          };
+        },
+        template: `
+    <div 
+      :class="['ticket-card relative rounded-2xl p-6 md:p-8 bg-[#12121A]', cardClasses]"
+    >
+      <!-- VIP Badge for Featured -->
+      <div v-if="ticket.featured" class="absolute -top-4 left-1/2 -translate-x-1/2">
+        <div class="vip-badge px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider">
+          VIP
+        </div>
+      </div>
+      
+      <!-- Favourite Heart -->
+      <button 
+        @click="toggleFavourite"
+        class="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
+        :aria-label="ticket.isFavourited ? 'Remove from favourites' : 'Add to favourites'"
+      >
+        <svg 
+          :class="['w-6 h-6 transition-all', isAnimating ? 'heart-animate' : '', ticket.isFavourited ? 'fill-[#FF006E] text-[#FF006E]' : 'text-gray-500']" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor" 
+          stroke-width="2"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
+      
+      <!-- Tier Name -->
+      <div class="mb-4">
+        <h3 class="font-bebas text-4xl md:text-5xl" :class="ticket.featured ? 'gradient-text' : 'text-white'">
+          {{ ticket.name }}
+        </h3>
+        <p class="text-gray-400 text-sm mt-1">{{ ticket.description }}</p>
+      </div>
+      
+      <!-- Price -->
+      <div class="mb-6">
+        <div class="flex items-baseline gap-1">
+          <span class="text-gray-400 text-lg">R</span>
+          <span class="font-bebas text-5xl md:text-6xl" :class="ticket.featured ? 'gradient-text' : 'text-white'">
+            {{ ticket.price }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Benefits List -->
+      <ul class="space-y-3 mb-8">
+        <li v-for="(benefit, index) in ticket.benefits" :key="index" class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-[#3A86FF] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span class="text-gray-300 text-sm">{{ benefit }}</span>
+        </li>
+      </ul>
+      
+      <!-- CTA Button -->
+      <button 
+        @click="selectTicket"
+        :class="[
+          'w-full py-4 rounded-xl font-bold text-base uppercase tracking-wide transition-all duration-300',
+          ticket.featured 
+            ? 'bg-gradient-to-r from-[#FF006E] via-[#8338EC] to-[#3A86FF] hover:shadow-lg hover:shadow-pink-500/50 hover:scale-105' 
+            : 'bg-white/10 hover:bg-white/20 border border-white/20'
+        ]"
+      >
+        Get Tickets
+      </button>
+      
+      <!-- Favourites Count -->
+      <div v-if="ticket.favourites > 0" class="mt-4 text-center">
+        <p class="text-xs text-gray-500">
+          <span class="text-[#FF006E] font-semibold">{{ ticket.favourites }}</span> 
+          {{ ticket.favourites === 1 ? 'person' : 'people' }} favourited this
+        </p>
+      </div>
+    </div>
+  `,
+      };
+
+      /*
+       * ============================================
+       * App.vue - Main Application Component
+       * ============================================
+       * <template> section would be main App.vue template
+       * <script setup> section below
+       * <style> section is in main <style> tag above
+       */
+      const App = {
+        name: "App",
+        components: {
+          TicketCard,
+        },
+        setup() {
+          // App.vue <script setup>
+
+          // Local data array with id, name, price, description, benefits[], featured, favourites, isFavourited
+          const tickets = ref([
+            {
+              id: 1,
+              name: "BRONZE",
+              price: "450",
+              description: "General Admission",
+              benefits: [
+                "Festival Ground Access",
+                "Access to All Food Stalls",
+                "Main Stage Viewing",
+                "Free Water Stations",
+              ],
+              featured: false,
+              favourites: 24,
+              isFavourited: false,
+            },
+            {
+              id: 2,
+              name: "SILVER",
+              price: "850",
+              description: "Enhanced Experience",
+              benefits: [
+                "All Bronze Benefits",
+                "Fast Track Entry Lane",
+                "Access to Silver Lounge",
+                "R200 Food & Drink Voucher",
+                "Commemorative T-Shirt",
+              ],
+              featured: false,
+              favourites: 47,
+              isFavourited: false,
+            },
+            {
+              id: 3,
+              name: "GOLD",
+              price: "1500",
+              description: "VIP All Access",
+              benefits: [
+                "All Silver Benefits",
+                "VIP Front Stage Access",
+                "Private VIP Lounge + Bar",
+                "Meet & Greet with Chefs",
+                "R500 Food & Drink Voucher",
+                "Exclusive Merch Package",
+                "Dedicated Concierge Service",
+              ],
+              featured: true,
+              favourites: 89,
+              isFavourited: false,
+            },
+          ]);
+
+          // Computed: Total favourites across all tiers
+          const totalFavourites = computed(() => {
+            return tickets.value.reduce(
+              (sum, ticket) => sum + ticket.favourites,
+              0,
+            );
+          });
+
+          // Computed: Count of favourited tickets
+          const favouritedCount = computed(() => {
+            return tickets.value.filter((t) => t.isFavourited).length;
+          });
+
+          // Method: Toggle favourite status
+          const handleToggleFavourite = (ticketId) => {
+            const ticket = tickets.value.find((t) => t.id === ticketId);
+            if (ticket) {
+              ticket.isFavourited = !ticket.isFavourited;
+              ticket.favourites += ticket.isFavourited ? 1 : -1;
+            }
+          };
+
+          // Method: Handle ticket selection
+          const handleSelectTicket = (ticket) => {
+            alert(
+              `You selected ${ticket.name} tickets for R${ticket.price}!\n\nThis would redirect to checkout in a real app.`,
+            );
+          };
+
+          // Method: Scroll to tickets section
+          const scrollToTickets = () => {
+            document
+              .getElementById("tickets")
+              .scrollIntoView({ behavior: "smooth" });
+          };
+
+          return {
+            tickets,
+            totalFavourites,
+            favouritedCount,
+            handleToggleFavourite,
+            handleSelectTicket,
+            scrollToTickets,
+          };
+        },
+        // App.vue <template>
+        template: `
+    <div class="min-h-screen">
+      <!-- Header/Nav -->
+      <header class="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-white/10">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div class="font-bebas text-2xl md:text-3xl gradient-text">
+              CTF '25
+            </div>
+            <div class="flex items-center gap-4 md:gap-6">
+              <div class="hidden sm:flex items-center gap-2 text-sm">
+                <svg class="w-5 h-5 text-[#FF006E]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="text-gray-300">{{ favouritedCount }} Favourited</span>
+              </div>
+              <button 
+                @click="scrollToTickets"
+                class="px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-gradient-to-r from-[#FF006E] to-[#8338EC] font-semibold text-sm hover:shadow-lg hover:shadow-pink-500/50 transition-all"
+              >
+                Get Tickets
+              </button>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Hero Section: Full-viewport with background image + dark overlay -->
+      <section class="hero-bg relative min-h-screen flex items-center justify-center">
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0A0A0F]"></div>
+        
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+          <div class="space-y-6 md:space-y-8">
+            <!-- Date Badge -->
+            <div class="inline-block">
+              <div class="px-6 py-2 rounded-full glass-effect border border-white/20 text-sm font-medium tracking-wider">
+                DEC 15-17 · 2025
+              </div>
+            </div>
+            
+            <!-- Event Title in bold festival typography -->
+            <h1 class="font-bebas text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none">
+              <span class="block">CAPE TOWN</span>
+              <span class="block gradient-text">FOOD FEST</span>
+            </h1>
+            
+            <!-- Tagline -->
+            <p class="font-bebas text-2xl md:text-4xl tracking-wide text-gray-200">
+              Eat. Dance. Celebrate.
+            </p>
+            
+            <!-- Date/Location Text -->
+            <p class="text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
+              Green Point Park · Cape Town, South Africa<br>
+              Three days of culinary excellence, live music &amp; unforgettable vibes
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <button 
+                @click="scrollToTickets"
+                class="w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-full bg-gradient-to-r from-[#FF006E] via-[#8338EC] to-[#3A86FF] font-bold text-base md:text-lg uppercase tracking-wide hover:shadow-2xl hover:shadow-pink-500/50 hover:scale-105 transition-all duration-300"
+              >
+                Get Tickets Now
+              </button>
+              <button class="w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-full glass-effect border border-white/20 font-semibold text-base hover:bg-white/10 transition-all">
+                View Lineup
+              </button>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto pt-12">
+              <div>
+                <div class="font-bebas text-4xl md:text-5xl gradient-text">50+</div>
+                <div class="text-xs md:text-sm text-gray-400 uppercase tracking-wider mt-1">Food Vendors</div>
+              </div>
+              <div>
+                <div class="font-bebas text-4xl md:text-5xl gradient-text">20+</div>
+                <div class="text-xs md:text-sm text-gray-400 uppercase tracking-wider mt-1">Live Artists</div>
+              </div>
+              <div>
+                <div class="font-bebas text-4xl md:text-5xl gradient-text">{{ totalFavourites }}</div>
+                <div class="text-xs md:text-sm text-gray-400 uppercase tracking-wider mt-1">Favourites</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Ticket Tiers Section -->
+      <section id="tickets" class="py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+          <!-- Section Header -->
+          <div class="text-center mb-12 md:mb-16">
+            <h2 class="font-bebas text-5xl md:text-6xl lg:text-7xl mb-4">
+              Choose Your <span class="gradient-text">Experience</span>
+            </h2>
+            <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
+              Select the perfect ticket tier for your festival journey. Each level unlocks new perks and exclusive access.
+            </p>
+          </div>
+          
+          <!-- Grid Layout: Responsive - Mobile Stack -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-start">
+            <TicketCard 
+              v-for="ticket in tickets" 
+              :key="ticket.id"
+              :ticket="ticket"
+              @toggle-favourite="handleToggleFavourite"
+              @select-ticket="handleSelectTicket"
+            />
+          </div>
+          
+          <!-- Additional Info -->
+          <div class="mt-16 text-center">
+            <p class="text-gray-500 text-sm">
+              All tickets include access to general festival grounds. Ages 18+ only. ID required at entry.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="border-t border-white/10 py-12 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+          <div class="font-bebas text-3xl gradient-text mb-4">CAPE TOWN FOOD FEST</div>
+          <p class="text-gray-500 text-sm mb-6">© 2025 CTF. All rights reserved.</p>
+          <div class="flex items-center justify-center gap-6 text-gray-600">
+            <a href="#" class="hover:text-[#FF006E] transition-colors">Privacy</a>
+            <a href="#" class="hover:text-[#FF006E] transition-colors">Terms</a>
+            <a href="#" class="hover:text-[#FF006E] transition-colors">Contact</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  `,
+      };
+
+      createApp(App).mount("#app");
+    </script>
+    <script>
+      (function () {
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest("[data-product-id]");
+          if (!a) return;
+          e.preventDefault();
+          var pid = a.getAttribute("data-product-id");
+          if (pid)
+            parent.postMessage(
+              { type: "ecto-artifact-link-click", productId: pid },
+              "*",
+            );
+        });
+      })();
+    </script>
+  </body>
+</html>
